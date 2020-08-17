@@ -1,5 +1,8 @@
-﻿using SimpleTrader.WPF.State.Authenticators;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
+using SimpleTrader.WPF.State.Authenticators;
+using SimpleTrader.WPF.State.Navigators;
 using SimpleTrader.WPF.ViewModels;
+using SimpleTrader.WPF.ViewModels.Factories;
 using SimpleTrader.WPF.Views;
 using System;
 using System.Collections.Generic;
@@ -11,11 +14,13 @@ namespace SimpleTrader.WPF.Commands
     public class LoginCommand : ICommand
     {
         private readonly IAuthenticator _authenticator;
+        private readonly IRenavigator _renavigator;
         private readonly LoginViewModel _loginViewModel;
 
-        public LoginCommand(LoginViewModel loginViewModel, IAuthenticator authenticator)
+        public LoginCommand(LoginViewModel loginViewModel, IAuthenticator authenticator, IRenavigator renavigator)
         {
             _authenticator = authenticator;
+            _renavigator = renavigator;
             _loginViewModel = loginViewModel;
         }
 
@@ -29,6 +34,10 @@ namespace SimpleTrader.WPF.Commands
         public async void Execute(object parameter)
         {
             bool success = await _authenticator.Login(_loginViewModel.Username, parameter.ToString());
+            if (success)
+            {
+                _renavigator.Renavigate();
+            }
         }
     }
 }
