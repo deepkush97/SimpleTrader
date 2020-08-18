@@ -8,6 +8,7 @@ using SimpleTrader.EntityFramework;
 using SimpleTrader.EntityFramework.Services;
 using SimpleTrader.FinancialModelingPrepAPI.Services;
 using SimpleTrader.WPF.State.Accounts;
+using SimpleTrader.WPF.State.Assets;
 using SimpleTrader.WPF.State.Authenticators;
 using SimpleTrader.WPF.State.Navigators;
 using SimpleTrader.WPF.ViewModels;
@@ -52,7 +53,9 @@ namespace SimpleTrader.WPF
             services.AddSingleton<ISimpleTradeViewModelFactory, SimpleTradeViewModelFactory>();
             services.AddSingleton<BuyViewModel>();
             services.AddSingleton<PortfolioViewModel>();
+            services.AddSingleton<AssetSummaryViewModel>();
             services.AddSingleton<HomeViewModel>(services => new HomeViewModel(
+                services.GetRequiredService<AssetSummaryViewModel>(),
                  MajorIndexListingViewModel.LoadMajorIndexViewModel
                     (
                         services.GetRequiredService<IMajorIndexService>()
@@ -89,6 +92,7 @@ namespace SimpleTrader.WPF
             services.AddScoped<INavigator, Navigator>();
             services.AddScoped<IAuthenticator, Authenticator>();
             services.AddScoped<IAccountStore, AccountStore>();
+            services.AddScoped<AssetStore>();
             services.AddScoped<MainViewModel>();
 
             services.AddScoped<MainWindow>(s => new MainWindow(s.GetRequiredService<MainViewModel>()));
