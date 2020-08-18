@@ -1,11 +1,12 @@
-﻿using System;
+﻿using SimpleTrader.WPF.State.Navigators;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace SimpleTrader.WPF.ViewModels.Factories
 {
-    public interface ISimpleTradeViewModelFactory<T> where T : ViewModelBase
+    public interface ISimpleTradeViewModelFactory
     {
-        T CreateViewModel();
+        ViewModelBase CreateViewModel(ViewType viewType);
     }
 }

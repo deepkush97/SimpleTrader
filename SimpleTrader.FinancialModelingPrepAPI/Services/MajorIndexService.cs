@@ -3,6 +3,7 @@ using SimpleTrader.Domain.Models;
 using SimpleTrader.Domain.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,9 +22,9 @@ namespace SimpleTrader.FinancialModelingPrepAPI.Services
             //    majorIndex.Type = indexType;
             //    return majorIndex;
             //}
-
             return new MajorIndex
             {
+                IndexName = indexType.ToString(),
                 Changes = (DateTime.Now.Hour + DateTime.Now.Minute * 0.01),
                 Price = (DateTime.Now.Hour + DateTime.Now.Minute * 0.02),
                 Type = indexType
