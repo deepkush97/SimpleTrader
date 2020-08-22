@@ -1,22 +1,23 @@
-﻿using SimpleTrader.Domain.Models;
+﻿using SimpleTrader.Domain.Exceptions;
+using SimpleTrader.Domain.Models;
 using SimpleTrader.Domain.Services.TransactionServices;
 using SimpleTrader.WPF.State.Accounts;
 using SimpleTrader.WPF.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace SimpleTrader.WPF.Commands
 {
-    public class BuyStockCommand : ICommand
+    public class BuyStockCommand : AsyncCommandBase
     {
         private readonly BuyViewModel _buyViewModel;
         private readonly IBuyStockService _buyStockService;
         private readonly IAccountStore _accountStore;
-
-        public event EventHandler CanExecuteChanged;
 
         public BuyStockCommand(BuyViewModel buyViewModel, IBuyStockService buyStockService, IAccountStore accountStore)
         {
@@ -25,22 +26,29 @@ namespace SimpleTrader.WPF.Commands
             _accountStore = accountStore;
         }
 
-        public bool CanExecute(object parameter)
+        public override async Task ExecuteAsync(object parameter)
         {
-            return true;
-        }
-
-        public async void Execute(object parameter)
-        {
+            _buyViewModel.ErrorMessage = string.Empty;
+            _buyViewModel.StatusMessage = string.Empty;
             try
             {
-                Account account = await _buyStockService.BuyStock(_accountStore.CurrentAccount, _buyViewModel.Symbol, _buyViewModel.SharesToBuy);
+                string symbol = _buyViewModel.Symbol;
+                int sharesToBuy = _buyViewModel.SharesToBuy;
+                Account account = await _buyStockService.BuyStock(_accountStore.CurrentAccount, symbol, sharesToBuy);
                 _accountStore.CurrentAccount = account;
-                MessageBox.Show("Successful");
+                _buyViewModel.StatusMessage = $"Successfully purchased {sharesToBuy} share(s) of {symbol}";
             }
-            catch (Exception e)
+            catch (InsufficientFundsException)
             {
-                MessageBox.Show(e.Message);
+                _buyViewModel.ErrorMessage = "Account has insufficient funds. Please transfer more money into your account.";
+            }
+            catch (InvalidSymbolException)
+            {
+                _buyViewModel.ErrorMessage = "Symbol does not exists.";
+            }
+            catch (Exception)
+            {
+                _buyViewModel.ErrorMessage = "Transaction Failed";
             }
         }
     }

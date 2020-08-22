@@ -4,6 +4,7 @@ using SimpleTrader.WPF.Commands;
 using SimpleTrader.WPF.State.Accounts;
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Windows.Input;
 
@@ -78,11 +79,26 @@ namespace SimpleTrader.WPF.ViewModels
             }
         }
 
+        public MessageViewModel ErrorMessageViewModel { get; }
+
+        public string ErrorMessage
+        {
+            set => ErrorMessageViewModel.Message = value;
+        }
+        public string StatusMessage
+        {
+            set => StatusMessageViewModel.Message = value;
+        }
+
+        public MessageViewModel StatusMessageViewModel { get; }
+
         public ICommand SearchSymbolCommand { get; set; }
         public ICommand BuyStockCommand { get; set; }
 
-        public BuyViewModel(IStockPriceService stockPriceService, IBuyStockService buyStockService, IAccountStore   accountStore)
+        public BuyViewModel(IStockPriceService stockPriceService, IBuyStockService buyStockService, IAccountStore accountStore)
         {
+            ErrorMessageViewModel = new MessageViewModel();
+            StatusMessageViewModel = new MessageViewModel();
             SearchSymbolCommand = new SearchSymbolCommand(this, stockPriceService);
             BuyStockCommand = new BuyStockCommand(this, buyStockService, accountStore);
         }
